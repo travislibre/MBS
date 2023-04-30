@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>{{ movie.title }}</h1>
+  <p>You are purchasing {{ num_tickets }} ticket{% if num_tickets > 1 %}s{% endif %}.</p>
+  <form method="post" action="{% url 'purchase_complete' movie.id %}">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="payment_method">Select Payment Method:</label>
+      <select class="form-control" id="payment_method" name="payment_method" required>
+        <option value="" selected disabled>Select Payment Method</option>
+        <option value="credit_card" required>Credit Card</option>
+        <option value="paypal" required>PayPal</option>
+        <option value="debit_card" required>Debit Card</option>
+      </select>
+    </div>
+
+    <div class="credit-card-form" style="display: none;">
+      <label for="card_number">Card Number:</label>
+      <input type="text" id="card_number" name="card_number">
+      <label for="cvc">CVC:</label>
+      <input type="text" id="cvc" name="cvc" >
+      <label for="expiration">Expiration:</label>
+      <input type="text" id="expiration" name="expiration" >
+      <label for="billing_address">Billing Address:</label>
+      <input type="text" id="billing_address" name="billing_address" >
+      <label for="card_holder_name">Cardholder Name:</label>
+      <input type="text" id="card_holder_name" name="card_holder_name" >
+    </div>
+    <div class="paypal-form" style="display: none;">
+      <label for="paypal_email">PayPal Email:</label>
+      <input type="text" id="paypal_email" name="paypal_email" >  <!--Used text input type instead of email to avoid error-checking when not selected-->>
+      <label for="paypal_password">PayPal Password:</label>
+      <input type="password" id="paypal_password" name="paypal_password" >
+    </div>
+    <div class="debit-card-form" style="display:none">
+      <label for="debit_card_number">Card Number:</label>
+      <input type="text" id="debit_card_number" name="debit_card_number" >
+      <label for="debit_cvc">CVC:</label>
+      <input type="text" id="debit_cvc" name="debit_cvc" >
+      <label for="debit_expiration">Expiration:</label>
+      <input type="text" id="debit_expiration" name="debit_expiration" >
+      <label for="debit_billing_address">Billing Address:</label>
+      <input type="text" id="debit_billing_address" name="debit_billing_address" >
+      <label for="debit_card_holder_name">Cardholder Name:</label>
+      <input type="text" id="debit_card_holder_name" name="debit_card_holder_name" >
+    </div>
+    <button type="submit" id="confirmButton">Confirm Purchase</button>
+  </form> 
+<form method="get" action="{% url 'purchase_tickets' movie.id %}">
+    <button type="submit">Cancel</button>
+</form>
+<script>
+  // show/hide payment forms based on selected payment method
+  const confirmButton = document.querySelector('#confirmButton');
+  const paymentMethodSelect = document.querySelector('#payment_method');
+  const creditCardForm = document.querySelector('.credit-card-form');
+  const paypalForm = document.querySelector('.paypal-form');
+  const debitCardForm = document.querySelector('.debit-card-form');
+  let isFormValid=false;
+  let formIdentifier = 0;
+
+  function validateFormFields(formFields) {
+    for (let i = 0; i < formFields.length; i++) {
+      if (formFields[i].value.trim() === '') {
+        alert('Please fill all fields listed');
+        return false;
+      }
+    }
+    //Card
+    if (formIdentifier==1 || formIdentifier==3) {
+      alert('Card time!');
+      let identString, cvcString, expirString;
+      if(formIdentifier==1){
+        identString = "card_number";
+        cvcString = "cvc";
+        expirString = "expiration";
+      }
+      if(formIdentifier==3){
+        identString = "debit_card_number";
+        cvcString = "debit_cvc";
+        expirString = "debit_expiration";
+      }
+      let cardNumber = document.getElementById(identString).value;
+      let cvc = document.getElementById(cvcString).value;
+      let expiration = document.getElementById(expirString).value;
+      console.log(cardNumber);
+      const cardNumberRegex = /^[0-9]{16}$/;
+      const cvcRegex = /^[0-9]{3}$/;
+      const expirationRegex = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
+
+      if (!cardNumberRegex.test(cardNumber)) {
+        alert('Please enter a valid 16-digit card number');
+        return false;
+      }
+
+      if (!cvcRegex.test(cvc)) {
+        alert('Please enter a valid 3-digit cvc number');
+        return false;
+      }
+
+      if (!expirationRegex.test(expiration)) {
+        alert('Please enter a valid expiration date in the format MM/YY');
+        return false;
+      }
+    } 
+    //Paypal
+    else if (formIdentifier==2) {
+      alert('Paypal time!');
+      paypalEmail = document.getElementById('paypal_email').value;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(paypalEmail)) {
+        alert('Please enter a valid email address for your PayPal account');
+        return false;
+      }
+    }
+    return true;
+  }
+  //Checks to see if fields are filled
+  confirmButton.addEventListener('click', event => {
+    if(formIdentifier==1){
+      const creditCardFields = document.querySelectorAll('.credit-card-form input');
+      isFormValid = validateFormFields(creditCardFields);
+    }
+    else if(formIdentifier==2){
+      const paypalFields = document.querySelectorAll('.paypal-form input');
+      isFormValid = validateFormFields(paypalFields);
+    }
+    else if(formIdentifier==3){
+      const debitCardFields = document.querySelectorAll('.debit-card-form input');
+      isFormValid = validateFormFields(debitCardFields);
+    }
+    if (!isFormValid) {
+      event.preventDefault(); // prevent form submission
+    }
+    else if(isFormValid){
+      event.stopPropagation();
+    }
+  });
+
+  paymentMethodSelect.addEventListener('change', (e) => {
+    const selectedPaymentMethod = e.target.value;
+    isFormValid=true;
+    if (selectedPaymentMethod === 'credit_card') {
+      // show credit card form
+      formIdentifier=1;
+      creditCardForm.style.display = 'block';
+      paypalForm.style.display = 'none';
+      debitCardForm.style.display = 'none';
+    } else if (selectedPaymentMethod === 'paypal') {
+      // show paypal form
+      formIdentifier=2;
+      
+      creditCardForm.style.display = 'none';
+      paypalForm.style.display = 'block';
+      debitCardForm.style.display = 'none';
+    } else if (selectedPaymentMethod === 'debit_card') {
+      // show debit card form
+      formIdentifier=3;
+      
+      creditCardForm.style.display = 'none';
+      paypalForm.style.display = 'none';
+      debitCardForm.style.display = 'block';
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>{{ movie.title }}</h1>
+    <form method="post" action="{% url 'purchase_confirm' movie.id %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="num_tickets">Number of tickets:</label>
+        <input type="number" id="num_tickets" name="num_tickets" min="1" max="10" value="1" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="theater">Select a theater:</label>
+        <select id="theater" name="theater" class="form-control">
+          <option value="AMC Theaters">Lubbock Theater</option>
+          <option value="Regal Cinemas">Amarillo Theater</option>
+          <option value="Cineplex Odeon">Levelland Theater</option>
+          <option value="Cinemark Theaters">Plainview Theater</option>
+          <option value="Landmark Theatres">Snyder Theater</option>
+          <option value="Alamo Drafthouse Cinema">Abilene Theater</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="showtime">Select a showtime:</label>
+        <select name="showtime" id="showtime" class="form-control">
+          {% for showtime in showtimes %}
+          <option value="{{ showtime }}">{{ showtime }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="text" name="price" id="price" class="form-control" value="{{ movie.price }}" readonly>
+      </div>
+      <button type="submit" class="btn btn-primary">Purchase</button>
+    </form>  
+  </div>  
+{% endblock %}
