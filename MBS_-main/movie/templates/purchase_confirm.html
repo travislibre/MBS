@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
   <h1>{{ movie.title }}</h1>
-  <p>You are purchasing {{ num_tickets }} ticket{% if num_tickets > 1 %}s{% endif %}.</p>
+  <p>You are purchasing {{ num_tickets }} ticket{% if num_tickets > 1 %}s{% endif %} at the {{ theater }} for {{ showtime }}.</p>
   <form method="post" action="{% url 'purchase_complete' movie.id %}">
     {% csrf_token %}
+    <input type="hidden" name="ticketCount" id="ticketCount">
+    <input type="hidden" name="theaterB" id="theaterB">
+    <input type="hidden" name="showtimeB" id="showtimeB">
     <div class="form-group">
       <label for="payment_method">Select Payment Method:</label>
       <select class="form-control" id="payment_method" name="payment_method" required>
@@ -119,6 +122,20 @@
   }
   //Checks to see if fields are filled
   confirmButton.addEventListener('click', event => {
+    const theater = '{{ theater }}';
+    const showtime = '{{ showtime }}';
+    const num_tickets = '{{ num_tickets }}';
+    const ticketsValue = num_tickets;
+    const theaterValue = theater;
+    const showtimeValue = showtime;
+    console.log(theaterValue, showtimeValue);
+    // Set the values of the hidden input fields
+    const ticketInput = document.querySelector('#ticketCount');
+    ticketInput.value = ticketsValue;
+    const theaterInput = document.querySelector('#theaterB');
+    theaterInput.value = theaterValue;
+    const showtimeInput = document.querySelector('#showtimeB');
+    showtimeInput.value = showtimeValue;
     if(formIdentifier==1){
       const creditCardFields = document.querySelectorAll('.credit-card-form input');
       isFormValid = validateFormFields(creditCardFields);

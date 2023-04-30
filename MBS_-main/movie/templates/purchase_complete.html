@@ -3,6 +3,7 @@
 {% block content %}
   <h1>Thank You for Your Purchase!</h1>
   <p>You have successfully purchased {{ num_tickets }} ticket{% if num_tickets > 1 %}s{% endif %} for "{{ movie.title }}".</p>
+  <p>The showing will be at {{theater}} at {{showtime}}.</p>
   <p>Your ticket barcode is: {{ barcode }}</p>
   <div class="barcode">{{ barcode }}</div>
   <p>Please present this barcode at the theater to receive your tickets.</p>

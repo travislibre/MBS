@@ -12,12 +12,12 @@
       <div class="form-group">
         <label for="theater">Select a theater:</label>
         <select id="theater" name="theater" class="form-control">
-          <option value="AMC Theaters">Lubbock Theater</option>
-          <option value="Regal Cinemas">Amarillo Theater</option>
-          <option value="Cineplex Odeon">Levelland Theater</option>
-          <option value="Cinemark Theaters">Plainview Theater</option>
-          <option value="Landmark Theatres">Snyder Theater</option>
-          <option value="Alamo Drafthouse Cinema">Abilene Theater</option>
+          <option value="Lubbock Theater">Lubbock Theater</option>
+          <option value="Amarillo Theater">Amarillo Theater</option>
+          <option value="Levelland Theater">Levelland Theater</option>
+          <option value="Plainview Theater">Plainview Theater</option>
+          <option value="Snyder Theater">Snyder Theater</option>
+          <option value="Abilene Theater">Abilene Theater</option>
         </select>
       </div>
       <div class="form-group">
@@ -32,7 +32,28 @@
         <label for="price">Price:</label>
         <input type="text" name="price" id="price" class="form-control" value="{{ movie.price }}" readonly>
       </div>
+      <input type="hidden" name="theater_value" id="theater_value">
+      <input type="hidden" name="showtime_value" id="showtime_value">
       <button type="submit" class="btn btn-primary">Purchase</button>
     </form>  
   </div>  
+  <script>
+    // Get the Purchase button
+    const purchaseButton = document.querySelector('.btn-primary');
+
+    // Add an event listener to the Purchase button
+    purchaseButton.addEventListener('click', function() {
+      // Get the selected theater and showtime values
+      const theaterSelect = document.querySelector('#theater');
+      const showtimeSelect = document.querySelector('#showtime');
+      const theaterValue = theaterSelect.options[theaterSelect.selectedIndex].value;
+      const showtimeValue = showtimeSelect.options[showtimeSelect.selectedIndex].value;
+
+      // Set the values of the hidden input fields
+      const theaterInput = document.querySelector('#theater_value');
+      theaterInput.value = theaterValue;
+      const showtimeInput = document.querySelector('#showtime_value');
+      showtimeInput.value = showtimeValue;
+    });
+  </script>
 {% endblock %}
