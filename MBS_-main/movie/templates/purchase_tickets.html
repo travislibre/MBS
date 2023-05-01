@@ -7,7 +7,7 @@
       {% csrf_token %}
       <div class="form-group">
         <label for="num_tickets">Number of tickets:</label>
-        <input type="number" id="num_tickets" name="num_tickets" min="1" max="10" value="1" class="form-control">
+        <input type="number" required id="num_tickets" name="num_tickets" min="1" max="10" value="1" class="form-control">
       </div>
       <div class="form-group">
         <label for="theater">Select a theater:</label>
