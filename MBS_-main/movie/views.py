@@ -92,11 +92,6 @@ def purchase_confirm(request, movie_id):
         theater = request.POST.get('theater_value', '')
         showtime = request.POST.get('showtime_value','')
         print("purchase-confirm",theater,showtime)
-        #if num_tickets > 0 and num_tickets <= 10:
-            # Logic for processing the ticket purchase would go here
-            # You would probably want to create a new model for tickets and
-            # associate them with the user and the movie
-            # For now, we'll just render a confirmation page
         context = {'movie': movie, 'num_tickets': num_tickets, 'theater':theater, 'showtime':showtime}
         return render(request, 'purchase_confirm.html', context)
     return redirect('purchase_tickets', movie_id=movie.id)
@@ -123,6 +118,7 @@ def purchase_complete(request, movie_id):
         f.write(theater + '\n')
         f.write(showtime + '\n')
         f.write(barcode + '\n')
+        f.write('\n')
     context = {'movie': movie, 'barcode':barcode, 'num_tickets':num_tickets,'theater':theater,'showtime':showtime}
     return render(request, 'purchase_complete.html', context)
 
